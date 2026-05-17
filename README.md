@@ -1,1 +1,1259 @@
-# gavi-esnutrition
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaviões Nutrition — Linha HAWK</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D40000;--red-b:#FF2020;--red-d:#7a0000;
+  --blk:#070707;--b2:#0e0e0e;--b3:#161616;--b4:#1e1e1e;
+  --wh:#ffffff;--gr:#999;--grd:#444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--blk);color:var(--wh);font-family:'Barlow',sans-serif;overflow-x:hidden}
+
+/* NOISE OVERLAY */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  opacity:.3}
+
+/* ═══ NAV ═══ */
+#nav{position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px clamp(16px,4vw,60px);
+  background:linear-gradient(to bottom,rgba(7,7,7,.98),transparent);
+  transition:background .4s,backdrop-filter .4s}
+#nav.solid{background:rgba(7,7,7,.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo img{height:clamp(36px,5vw,52px);filter:drop-shadow(0 0 14px rgba(212,0,0,.5))}
+.nav-links{display:flex;gap:clamp(16px,2.5vw,32px);list-style:none}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.7rem,.9vw,.85rem);
+  font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gr);
+  text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--red)}
+.nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.7rem,.8vw,.82rem);
+  font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--wh);
+  background:var(--red);padding:10px clamp(16px,2vw,28px);text-decoration:none;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:background .2s;white-space:nowrap}
+.nav-cta:hover{background:var(--red-b)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--wh);transition:all .3s}
+.mob-menu{display:none;position:fixed;inset:0;background:rgba(7,7,7,.98);z-index:400;
+  flex-direction:column;align-items:center;justify-content:center;gap:32px;
+  backdrop-filter:blur(20px)}
+.mob-menu.open{display:flex}
+.mob-menu a{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:4px;
+  color:var(--wh);text-decoration:none;transition:color .2s}
+.mob-menu a:hover{color:var(--red)}
+.mob-close{position:absolute;top:20px;right:20px;background:none;border:none;
+  color:var(--wh);font-size:2rem;cursor:pointer}
+
+/* ═══ SHARED ═══ */
+.sec-wrap{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,60px)}
+.sec-label{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:600;
+  letter-spacing:5px;text-transform:uppercase;color:var(--red);
+  display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sec-label::after{content:'';width:36px;height:1px;background:var(--red);opacity:.5}
+.sec-title{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,5.5vw,5.5rem);letter-spacing:2px;line-height:.92;
+  color:var(--wh);margin-bottom:20px}
+.sec-title .red{color:var(--red)}
+
+/* REVEAL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(40px);
+  transition:opacity .75s ease,transform .75s ease}
+.reveal.up{transform:translateY(40px)}
+.reveal.left{transform:translateX(-40px)}
+.reveal.right{transform:translateX(40px)}
+.reveal.visible{opacity:1;transform:translate(0)}
+
+.btn-p{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.8rem,.9vw,.9rem);
+  font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--wh);
+  background:var(--red);padding:clamp(12px,1.5vw,16px) clamp(20px,3vw,40px);
+  text-decoration:none;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  transition:all .2s;display:inline-block;border:none;cursor:pointer}
+.btn-p:hover{background:var(--red-b);transform:translateY(-2px)}
+.btn-s{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.8rem,.9vw,.9rem);
+  font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--wh);
+  background:transparent;border:1px solid rgba(255,255,255,.2);
+  padding:clamp(12px,1.5vw,16px) clamp(20px,3vw,40px);text-decoration:none;
+  transition:all .2s;display:inline-block}
+.btn-s:hover{border-color:var(--red);color:var(--red)}
+.red-line{display:inline-block;color:var(--red)}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;
+  overflow:hidden;padding:clamp(100px,12vh,130px) clamp(16px,4vw,60px) 80px}
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 68% 50%,rgba(180,0,0,.13),transparent 65%),
+  linear-gradient(135deg,#070707,#0e0e0e 50%,#070707)}
+.hero-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(212,0,0,.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(212,0,0,.04) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:radial-gradient(ellipse 75% 75% at 72% 50%,black,transparent)}
+.hero-slash{position:absolute;top:0;width:2px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--red) 25%,var(--red) 75%,transparent);
+  transform:skewX(-5deg);opacity:.25}
+.hs1{right:38%}.hs2{right:calc(38% + 16px);opacity:.1}.hs3{right:calc(38% + 28px);opacity:.05}
+
+.hero-content{position:relative;z-index:2;max-width:clamp(300px,50%,580px)}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.68rem,.8vw,.8rem);
+  font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);
+  margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  animation:fadeUp .8s ease both}
+.hero-eyebrow::before{content:'';width:28px;height:2px;background:var(--red)}
+.hero-h1{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3.5rem,9vw,10rem);line-height:.88;letter-spacing:2px;
+  animation:fadeUp .8s .1s ease both}
+.hero-h1 .hawk{color:var(--red);display:block}
+.hero-h1 .sub{font-size:clamp(1.2rem,3vw,3.2rem);color:var(--gr);letter-spacing:5px;
+  display:block;margin-top:4px}
+.hero-tagline{font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(1rem,1.3vw,1.3rem);color:var(--gr);
+  margin-top:16px;line-height:1.55;max-width:440px;
+  animation:fadeUp .8s .2s ease both;border-left:3px solid var(--red);
+  padding-left:14px}
+.hero-4icons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  margin-top:28px;animation:fadeUp .8s .3s ease both}
+.hero-icon-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  padding:14px 10px;text-align:center}
+.hero-icon-item .ico{font-size:1.4rem;display:block;margin-bottom:6px}
+.hero-icon-item .lbl{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);
+  line-height:1.2}
+.hero-stats{display:flex;gap:clamp(20px,4vw,48px);margin-top:32px;
+  animation:fadeUp .8s .4s ease both}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,4vw,3.5rem);
+  color:var(--wh);line-height:1}
+.stat-n em{font-style:normal;color:var(--red)}
+.stat-l{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gr);margin-top:3px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px;
+  animation:fadeUp .8s .5s ease both}
+
+/* hero right — product showcase */
+.hero-visual{position:absolute;right:0;top:0;bottom:0;
+  width:clamp(40%,46%,50%);display:flex;align-items:center;justify-content:center;
+  animation:fadeIn 1.4s .3s ease both}
+.prod-showcase{position:relative;width:clamp(280px,38vw,460px);
+  height:clamp(280px,38vw,460px)}
+.ps-glow{position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:80%;height:80%;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(212,0,0,.28),transparent 70%);
+  animation:pulse 3s ease-in-out infinite}
+.ps-main{position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:72%;height:72%;object-fit:contain;
+  filter:drop-shadow(0 24px 60px rgba(212,0,0,.5));
+  z-index:3;transition:opacity .4s,transform .4s}
+.ps-orbit{position:absolute;width:clamp(56px,7vw,80px);height:clamp(56px,7vw,80px);
+  object-fit:contain;border-radius:50%;border:1.5px solid rgba(212,0,0,.35);
+  background:rgba(8,8,8,.85);padding:6px;
+  filter:drop-shadow(0 4px 10px rgba(212,0,0,.3));
+  cursor:pointer;z-index:4;transition:transform .3s,box-shadow .3s}
+.ps-orbit:hover{transform:scale(1.25)!important;
+  box-shadow:0 0 20px rgba(212,0,0,.5)}
+.o1{top:4%;left:12%}.o2{top:4%;right:12%}
+.o3{bottom:4%;left:8%}.o4{bottom:4%;right:8%}
+.o5{top:46%;left:-2%;transform:translateY(-50%)}
+.o6{top:46%;right:-2%;transform:translateY(-50%)}
+
+/* ═══ MARQUEE ═══ */
+.marquee-wrap{background:var(--red);overflow:hidden;padding:13px 0;position:relative}
+.marquee-track{display:flex;width:max-content;
+  animation:marquee 22s linear infinite;white-space:nowrap}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:4px;
+  color:var(--wh);padding:0 36px;display:inline-flex;align-items:center;gap:14px}
+.marquee-item::after{content:'🦅';font-size:.65rem}
+
+/* ═══ SEÇÃO VERTICAL DE RECEITA ═══ */
+.vertical{padding:clamp(60px,8vw,100px) 0;background:var(--b2);overflow:hidden}
+.vertical-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);
+  align-items:center}
+.vertical-text p{font-size:clamp(.9rem,1.1vw,1rem);color:var(--gr);line-height:1.85;
+  margin-bottom:16px;font-weight:300}
+.vertical-text strong{color:var(--wh)}
+.v4-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}
+.v4-item{background:var(--b3);border:1px solid rgba(255,255,255,.06);
+  border-left:3px solid var(--red);padding:18px 16px;transition:background .3s}
+.v4-item:hover{background:var(--b4)}
+.v4-icon{font-size:1.4rem;margin-bottom:8px;display:block}
+.v4-title{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--wh);margin-bottom:4px}
+.v4-text{font-size:.8rem;color:var(--gr);font-weight:300;line-height:1.5}
+
+/* product lineup strip */
+.prod-strip{display:flex;gap:clamp(8px,1.5vw,16px);align-items:flex-end;
+  justify-content:center}
+.prod-strip-item{text-align:center;flex:1}
+.prod-strip-item img{width:100%;max-width:110px;object-fit:contain;
+  filter:drop-shadow(0 12px 30px rgba(212,0,0,.35));
+  transition:transform .3s,filter .3s}
+.prod-strip-item:hover img{transform:translateY(-8px) scale(1.05);
+  filter:drop-shadow(0 20px 40px rgba(212,0,0,.6))}
+.prod-strip-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);
+  margin-top:8px}
+
+/* ═══ PDV / QUIOSQUE ═══ */
+.pdv{padding:clamp(60px,8vw,100px) 0;background:var(--blk);overflow:hidden;position:relative}
+.pdv-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
+.pdv-badge{display:inline-flex;align-items:center;gap:10px;
+  background:rgba(212,0,0,.1);border:1px solid rgba(212,0,0,.3);
+  padding:8px 18px;margin-bottom:24px;font-family:'Barlow Condensed',sans-serif;
+  font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red)}
+.pdv-text p{font-size:clamp(.85rem,1vw,.95rem);color:var(--gr);line-height:1.8;
+  font-weight:300;margin-bottom:14px}
+.pdv-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.pdv-card{background:var(--b2);border:1px solid rgba(255,255,255,.05);padding:18px 16px;
+  position:relative;overflow:hidden;transition:border-color .3s}
+.pdv-card:hover{border-color:rgba(212,0,0,.35)}
+.pdv-card-icon{font-size:1.6rem;margin-bottom:8px;display:block}
+.pdv-card-title{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--wh);margin-bottom:4px}
+.pdv-card-text{font-size:.78rem;color:var(--gr);font-weight:300;line-height:1.4}
+.pdv-footer-bar{text-align:center;margin-top:40px;padding:16px;
+  background:rgba(212,0,0,.06);border:1px solid rgba(212,0,0,.2)}
+.pdv-footer-bar p{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.85rem,1.1vw,1rem);
+  font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--wh)}
+.pdv-footer-bar span{color:var(--red)}
+
+/* kiosk illustration */
+.kiosk-wrap{width:100%;max-width:460px;margin:0 auto}
+.kiosk-img{width:100%;filter:drop-shadow(0 30px 60px rgba(212,0,0,.3))}
+
+/* ═══ ESTRATÉGIA DE VENDAS ═══ */
+.estrategia{padding:clamp(60px,8vw,100px) 0;background:var(--b2);overflow:hidden}
+.funnel-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:48px}
+.funnel-step{background:var(--b3);padding:clamp(20px,3vw,36px) clamp(16px,2vw,24px);
+  position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.04);
+  transition:background .3s,transform .3s;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 50%,calc(100% - 20px) 100%,0 100%)}
+.funnel-step:last-child{clip-path:none}
+.funnel-step:hover{background:var(--b4);transform:translateY(-4px)}
+.fs-num{font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:3px;
+  color:var(--red);margin-bottom:6px}
+.fs-icon{font-size:1.8rem;margin-bottom:10px;display:block}
+.fs-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;
+  color:var(--wh);margin-bottom:10px}
+.fs-text{font-size:.8rem;color:var(--gr);font-weight:300;line-height:1.5}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px}
+.kpi{background:var(--b3);border:1px solid rgba(255,255,255,.04);
+  padding:24px;text-align:center}
+.kpi-icon{font-size:1.8rem;margin-bottom:8px;display:block}
+.kpi-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;color:var(--wh)}
+.kpi-sub{font-size:.75rem;color:var(--gr);font-weight:300;margin-top:2px}
+
+/* ═══ PRODUTOS DETALHADOS ═══ */
+.produtos-detail{padding:clamp(60px,8vw,100px) 0;background:var(--blk)}
+.prod-header-row{display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:clamp(36px,5vw,56px);flex-wrap:wrap;gap:16px}
+.prod-header-row p{max-width:280px;font-size:.9rem;color:var(--gr);
+  line-height:1.7;font-weight:300}
+.prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.pcard{background:var(--b2);border:1px solid rgba(255,255,255,.04);overflow:hidden;
+  position:relative;cursor:pointer;transition:transform .4s,border-color .4s;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-8px);border-color:rgba(212,0,0,.35);z-index:2}
+.pcard-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;
+  transition:transform .5s;background:#0d0d0d}
+.pcard:hover .pcard-img{transform:scale(1.07)}
+.pcard-body{padding:clamp(16px,2vw,24px);display:flex;flex-direction:column;flex:1}
+.pcard-tag{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--red);
+  background:rgba(212,0,0,.1);padding:4px 10px;display:inline-block;
+  margin-bottom:10px;width:fit-content}
+.pcard-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,2vw,1.9rem);
+  letter-spacing:1px;color:var(--wh);line-height:1.05;margin-bottom:8px}
+.pcard-desc{font-size:.82rem;color:var(--gr);line-height:1.6;font-weight:300;flex:1}
+.pcard-bullets{list-style:none;margin-top:12px}
+.pcard-bullets li{font-size:.78rem;color:var(--gr);font-weight:300;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:8px}
+.pcard-bullets li::before{content:'›';color:var(--red);font-size:1rem}
+.pcard-spec{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;
+  letter-spacing:1px;color:var(--grd);text-transform:uppercase;margin-top:12px}
+.pcard-arrow{font-size:1rem;color:var(--red);opacity:0;
+  transform:translateX(-8px);transition:all .3s;margin-top:10px;display:block}
+.pcard:hover .pcard-arrow{opacity:1;transform:translateX(0)}
+.pcard.feat{grid-column:span 2;flex-direction:row}
+.pcard.feat .pcard-img{width:50%;aspect-ratio:auto;min-height:clamp(240px,30vw,380px);object-fit:cover}
+.pcard.feat .pcard-body{padding:clamp(24px,3vw,40px)}
+.pcard.feat .pcard-name{font-size:clamp(1.8rem,3vw,2.8rem)}
+
+/* ═══ OPORTUNIDADE DE MERCADO ═══ */
+.mercado{padding:clamp(60px,8vw,100px) 0;background:var(--b2);overflow:hidden}
+.mercado-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
+.big-numbers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px}
+.bn-card{background:var(--b3);border:1px solid rgba(255,255,255,.06);padding:clamp(20px,2.5vw,32px);
+  position:relative;overflow:hidden;transition:border-color .3s}
+.bn-card:hover{border-color:rgba(212,0,0,.3)}
+.bn-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;
+  background:var(--red);transform:scaleY(0);transform-origin:bottom;transition:transform .3s}
+.bn-card:hover::before{transform:scaleY(1)}
+.bn-n{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,4vw,4rem);
+  color:var(--wh);line-height:1}
+.bn-n em{font-style:normal;color:var(--red)}
+.bn-l{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gr);margin-top:4px}
+.mercado-perks{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.mp{display:flex;align-items:flex-start;gap:14px;padding:16px;
+  background:var(--b3);border-left:3px solid var(--red)}
+.mp-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.mp-title{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--wh);margin-bottom:2px}
+.mp-text{font-size:.78rem;color:var(--gr);font-weight:300}
+
+/* brasil map svg */
+.map-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+
+/* ═══ MODELO COMERCIAL ═══ */
+.modelo{padding:clamp(60px,8vw,100px) 0;background:var(--blk);overflow:hidden}
+.modelo-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:48px}
+.mf{background:var(--b2);border:1px solid rgba(255,255,255,.05);
+  padding:clamp(24px,3vw,40px);position:relative;overflow:hidden;
+  transition:border-color .3s,background .3s}
+.mf:hover{border-color:rgba(212,0,0,.3);background:var(--b3)}
+.mf-arrow{position:absolute;top:50%;right:-14px;transform:translateY(-50%);
+  font-size:1.5rem;color:var(--red);z-index:2;display:none}
+.mf:not(:last-child) .mf-arrow{display:block}
+.mf-icon{font-size:2rem;margin-bottom:16px;display:block}
+.mf-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;
+  color:var(--wh);margin-bottom:12px}
+.mf-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.mf-list li{font-size:.82rem;color:var(--gr);font-weight:300;
+  display:flex;align-items:center;gap:8px}
+.mf-list li::before{content:'✓';color:var(--red);font-weight:700;flex-shrink:0}
+.kpis-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:12px}
+.kr{background:var(--b2);border:1px solid rgba(255,255,255,.04);
+  padding:20px;text-align:center}
+.kr-icon{font-size:1.5rem;margin-bottom:6px;display:block}
+.kr-title{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--wh)}
+
+/* ═══ PROJEÇÃO DE VENDAS ═══ */
+.projecao{padding:clamp(60px,8vw,100px) 0;background:var(--b2);overflow:hidden}
+.proj-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:48px}
+.pn{background:var(--b3);border:1px solid rgba(255,255,255,.06);
+  padding:clamp(20px,3vw,36px) clamp(14px,2vw,24px);text-align:center;
+  position:relative;overflow:hidden;transition:border-color .3s}
+.pn:hover{border-color:rgba(212,0,0,.35)}
+.pn-icon{font-size:2rem;margin-bottom:12px;display:block}
+.pn-n{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2rem,4.5vw,4rem);color:var(--wh);line-height:1}
+.pn-n em{font-style:normal;color:var(--red)}
+.pn-l{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gr);margin-top:6px}
+.pn-sub{font-size:.72rem;color:var(--grd);font-weight:300;margin-top:4px}
+.proj-big{margin-top:8px;background:linear-gradient(135deg,#1a0000,#0a0a0a);
+  border:1px solid rgba(212,0,0,.25);
+  padding:clamp(30px,4vw,50px);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.pb-left{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,4rem);
+  color:var(--wh)}
+.pb-left em{font-style:normal;color:var(--red)}
+.pb-arrow{font-size:2.5rem;color:var(--red)}
+.pb-right{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,5.5vw,5.5rem);color:var(--wh)}
+.pb-right em{font-style:normal;color:var(--red)}
+.proj-note{font-size:.75rem;color:var(--grd);margin-top:12px;text-align:right}
+
+/* ═══ FASES DE IMPLEMENTAÇÃO ═══ */
+.fases{padding:clamp(60px,8vw,100px) 0;background:var(--blk);overflow:hidden}
+.fases-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin-top:48px}
+.fase{background:var(--b2);border:1px solid rgba(255,255,255,.04);
+  padding:clamp(16px,2vw,28px) clamp(12px,1.5vw,20px);
+  position:relative;overflow:hidden;transition:background .3s,transform .3s;
+  display:flex;flex-direction:column;align-items:center;text-align:center}
+.fase:hover{background:var(--b3);transform:translateY(-4px)}
+.fase-n{font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:3px;
+  color:var(--wh);background:var(--red);
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px}
+.fase-icon{font-size:1.6rem;margin-bottom:10px;display:block}
+.fase-title{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--wh);line-height:1.2}
+.fases-caption{text-align:center;margin-top:28px;padding:16px;
+  border:1px solid rgba(212,0,0,.2);background:rgba(212,0,0,.04)}
+.fases-caption p{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.9rem,1.2vw,1.1rem);
+  color:var(--gr);letter-spacing:1px}
+.fases-caption p em{font-style:normal;color:var(--wh)}
+
+/* ═══ OPERAÇÃO & MARKETING ═══ */
+.operacao{padding:clamp(60px,8vw,100px) 0;background:var(--b2);overflow:hidden}
+.op-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:48px}
+.op-col{background:var(--b3);border:1px solid rgba(255,255,255,.05);padding:clamp(24px,3vw,36px)}
+.op-col-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;
+  padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.op-col-icon{font-size:1.8rem}
+.op-col-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px;color:var(--wh)}
+.op-items{display:flex;flex-direction:column;gap:8px}
+.op-item{font-size:.85rem;color:var(--gr);font-weight:300;
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.04)}
+.op-item::before{content:'→';color:var(--red);font-weight:700;flex-shrink:0}
+.op-sub-items{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.op-chip{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:6px 12px;background:rgba(212,0,0,.1);
+  border:1px solid rgba(212,0,0,.2);color:var(--red)}
+.op-cta-bar{margin-top:12px;padding:clamp(20px,3vw,32px);
+  background:var(--red);text-align:center}
+.op-cta-bar p{font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.2rem,2vw,1.8rem);letter-spacing:3px;color:var(--wh)}
+
+/* ═══ IDENTIDADE VISUAL ═══ */
+.brand-id{padding:clamp(60px,8vw,100px) 0;background:var(--blk);overflow:hidden}
+.brand-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
+.brand-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}
+.b4{background:var(--b2);border:1px solid rgba(255,255,255,.05);
+  padding:20px 16px;text-align:center;transition:border-color .3s}
+.b4:hover{border-color:rgba(212,0,0,.35)}
+.b4-icon{font-size:1.6rem;margin-bottom:8px;display:block}
+.b4-title{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+.b4-text{font-size:.75rem;color:var(--gr);font-weight:300;line-height:1.4}
+.brand-tagline{margin-top:24px;padding:16px;border-left:4px solid var(--red);
+  background:rgba(212,0,0,.05)}
+.brand-tagline p{font-size:.9rem;color:var(--gr);font-weight:300;line-height:1.7}
+.brand-tagline strong{color:var(--wh)}
+
+.lineup-big{display:flex;gap:clamp(8px,1.5vw,16px);align-items:flex-end;justify-content:center}
+.lineup-item{flex:1;text-align:center}
+.lineup-item img{width:100%;object-fit:contain;max-width:120px;
+  filter:drop-shadow(0 10px 30px rgba(212,0,0,.4));
+  transition:transform .3s;display:block;margin:0 auto}
+.lineup-item:hover img{transform:translateY(-10px) scale(1.05)}
+.lineup-item .lname{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--red);margin-top:6px}
+
+/* ═══ CTA FINAL ═══ */
+.cta-final{position:relative;overflow:hidden;padding:clamp(80px,10vw,130px) clamp(16px,4vw,60px);
+  text-align:center;background:linear-gradient(135deg,#0b0000,var(--blk) 40%,#0b0000)}
+.cta-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',sans-serif;font-size:22vw;
+  color:rgba(212,0,0,.03);letter-spacing:8px;
+  white-space:nowrap;pointer-events:none;user-select:none}
+.cta-inner{position:relative;z-index:2;max-width:700px;margin:0 auto}
+.cta-inner .sec-label{justify-content:center}
+.cta-inner .sec-label::after,.cta-inner .sec-label::before{display:none}
+.cta-inner .sec-title{text-align:center}
+.cta-sub{font-size:clamp(.9rem,1.2vw,1.1rem);color:var(--gr);font-weight:300;
+  margin-bottom:40px;line-height:1.75}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--b2);border-top:1px solid rgba(255,255,255,.05);
+  padding:clamp(40px,6vw,60px) clamp(16px,4vw,60px)}
+.ft-inner{max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;
+  gap:clamp(32px,5vw,56px);padding-bottom:clamp(32px,4vw,44px);
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.ft-logo img{height:52px;object-fit:contain;margin-bottom:12px}
+.ft-tagline{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gr);margin-bottom:14px}
+.ft-desc{font-size:.83rem;color:var(--grd);line-height:1.7;font-weight:300}
+.ft-col-title{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--wh);margin-bottom:16px}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.ft-links a{font-size:.85rem;color:var(--grd);text-decoration:none;
+  transition:color .2s;font-weight:300}
+.ft-links a:hover{color:var(--red)}
+.ft-bottom{max-width:1280px;margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:24px;flex-wrap:wrap;gap:12px}
+.ft-copy{font-size:.76rem;color:var(--grd);font-weight:300}
+.ft-copy span{color:var(--red)}
+.ft-soc{display:flex;gap:10px}
+.soc{width:34px;height:34px;border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  color:var(--gr);text-decoration:none;transition:all .2s}
+.soc:hover{border-color:var(--red);color:var(--red)}
+.ft-hawk{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:4px;
+  color:rgba(212,0,0,.15);text-align:center;margin-top:20px;max-width:1280px;margin:20px auto 0}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes float{0%,100%{transform:translate(-50%,-52%)}50%{transform:translate(-50%,-48%)}}
+@keyframes shine{0%{left:-100%}100%{left:200%}}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .pcard.feat{grid-column:auto;flex-direction:column}
+  .pcard.feat .pcard-img{width:100%;min-height:240px}
+  .fases-strip{grid-template-columns:repeat(3,1fr)}
+  .proj-nums{grid-template-columns:repeat(2,1fr)}
+  .op-grid{grid-template-columns:1fr}
+  .funnel-steps{grid-template-columns:repeat(2,1fr)}
+  .funnel-step{clip-path:none}
+}
+@media(max-width:768px){
+  #nav .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero-visual{display:none}
+  .hero-content{max-width:100%}
+  .vertical-inner,.pdv-inner,.mercado-inner,.brand-grid{grid-template-columns:1fr;gap:40px}
+  .modelo-flow,.kpis-row{grid-template-columns:1fr}
+  .mf-arrow{display:none}
+  .v4-grid,.pdv-4,.b4-grid{grid-template-columns:1fr 1fr}
+  .big-numbers{grid-template-columns:1fr 1fr}
+  .fases-strip{grid-template-columns:repeat(2,1fr)}
+  .funnel-steps{grid-template-columns:1fr}
+  .proj-big{flex-direction:column;text-align:center}
+  .ft-inner{grid-template-columns:1fr 1fr;gap:32px}
+  .prod-grid{grid-template-columns:1fr}
+  .pcard.feat{flex-direction:column}
+}
+@media(max-width:480px){
+  .hero-4icons{grid-template-columns:repeat(2,1fr)}
+  .v4-grid,.pdv-4,.brand-4{grid-template-columns:1fr}
+  .big-numbers{grid-template-columns:1fr}
+  .proj-nums{grid-template-columns:1fr 1fr}
+  .fases-strip{grid-template-columns:1fr 1fr}
+  .ft-inner{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobmenu">
+  <button class="mob-close" onclick="closeMob()">✕</button>
+  <a href="#vertical" onclick="closeMob()">A Marca</a>
+  <a href="#pdv" onclick="closeMob()">Ponto de Venda</a>
+  <a href="#produtos" onclick="closeMob()">Produtos</a>
+  <a href="#mercado" onclick="closeMob()">Mercado</a>
+  <a href="#projecao" onclick="closeMob()">Projeção</a>
+  <a href="#fases" onclick="closeMob()">Fases</a>
+  <a href="#cta" onclick="closeMob()">Contato</a>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo"><img src="/mnt/user-data/uploads/LOGO-GAVIOES-NUTRITION.png" alt="Gaviões Nutrition"></div>
+  <ul class="nav-links">
+    <li><a href="#vertical">A Marca</a></li>
+    <li><a href="#pdv">PDV</a></li>
+    <li><a href="#produtos">Produtos</a></li>
+    <li><a href="#mercado">Mercado</a></li>
+    <li><a href="#projecao">Projeção</a></li>
+    <li><a href="#fases">Expansão</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Seja Parceiro</a>
+  <div class="hamburger" onclick="openMob()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-slash hs1"></div>
+  <div class="hero-slash hs2"></div>
+  <div class="hero-slash hs3"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">51 Anos de Legado · Nova Vertical de Receita</div>
+    <h1 class="hero-h1">
+      GAVIÕES<br>
+      <span class="hawk">NUTRITION</span>
+      <span class="sub">LINHAGEM HAWK</span>
+    </h1>
+    <p class="hero-tagline">
+      Uma nova vertical de receita, criada dentro da academia e escalável para todo o Brasil. Performance, conveniência e recorrência dentro do ecossistema Gaviões 24h.
+    </p>
+    <div class="hero-4icons">
+      <div class="hero-icon-item"><span class="ico">📈</span><span class="lbl">Margens<br>Atraentes</span></div>
+      <div class="hero-icon-item"><span class="ico">🔄</span><span class="lbl">Recorrência<br>e Fidelização</span></div>
+      <div class="hero-icon-item"><span class="ico">🇧🇷</span><span class="lbl">Escalável para<br>Todo o Brasil</span></div>
+      <div class="hero-icon-item"><span class="ico">✅</span><span class="lbl">Qualidade<br>e Confiança</span></div>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n">51<em>+</em></div><div class="stat-l">Anos de história</div></div>
+      <div><div class="stat-n">7</div><div class="stat-l">Produtos HAWK</div></div>
+      <div><div class="stat-n">100</div><div class="stat-l">Unidades ativas</div></div>
+    </div>
+    <div class="hero-btns">
+      <a href="#produtos" class="btn-p">Ver Linha Completa</a>
+      <a href="#projecao" class="btn-s">Ver Projeção</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="prod-showcase">
+      <div class="ps-glow"></div>
+      <img class="ps-main" id="ps-main" src="/mnt/user-data/uploads/WHEY_100_.png" alt="Produto Principal">
+      <img class="ps-orbit o1" src="/mnt/user-data/uploads/PRÉ_TREINO.png" alt="Pré-Treino">
+      <img class="ps-orbit o2" src="/mnt/user-data/uploads/TESTO.png" alt="Testo">
+      <img class="ps-orbit o3" src="/mnt/user-data/uploads/CREATINA_PURA.png" alt="Creatina">
+      <img class="ps-orbit o4" src="/mnt/user-data/uploads/TERMOGENICO.png" alt="Termogênico">
+      <img class="ps-orbit o5" src="/mnt/user-data/uploads/ENERGÉTICO.png" alt="Energético">
+      <img class="ps-orbit o6" src="/mnt/user-data/uploads/PRE_TREINO_STICK.png" alt="Stick">
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">100% Whey Protein</span><span class="marquee-item">Testo Hawk Man & Woman</span><span class="marquee-item">Pré Treino Hawk 300g</span><span class="marquee-item">Hawk Stick Sachê</span><span class="marquee-item">Energético Hawk 269ml</span><span class="marquee-item">Creatina 100% Pura</span><span class="marquee-item">Hawk Extreme Termogênico</span><span class="marquee-item">Gaviões 24hrs</span>
+    <span class="marquee-item">100% Whey Protein</span><span class="marquee-item">Testo Hawk Man & Woman</span><span class="marquee-item">Pré Treino Hawk 300g</span><span class="marquee-item">Hawk Stick Sachê</span><span class="marquee-item">Energético Hawk 269ml</span><span class="marquee-item">Creatina 100% Pura</span><span class="marquee-item">Hawk Extreme Termogênico</span><span class="marquee-item">Gaviões 24hrs</span>
+  </div>
+</div>
+
+<!-- ═══ VERTICAL DE RECEITA ═══ -->
+<section class="vertical" id="vertical">
+  <div class="sec-wrap">
+    <div class="vertical-inner">
+      <div class="reveal left">
+        <div class="sec-label">A Oportunidade</div>
+        <h2 class="sec-title">NOVA VERTICAL<br>DE <span class="red">RECEITA</span></h2>
+        <div class="vertical-text">
+          <p>A rede <strong>Gaviões 24hrs</strong> tem o que toda marca de suplementos precisa e não tem: acesso direto ao consumidor no momento exato do treino, com frequência diária e alto fluxo garantido.</p>
+          <p>A <strong>Gaviões Nutrition</strong> transforma isso em receita recorrente — com marca própria, margem controlada e um portfólio de <strong>7 produtos de alto giro</strong> para todos os perfis de aluno.</p>
+        </div>
+        <div class="v4-grid">
+          <div class="v4-item"><span class="v4-icon">📈</span><div class="v4-title">Margens Atraentes</div><p class="v4-text">Marca própria com ~40% de margem média nos produtos</p></div>
+          <div class="v4-item"><span class="v4-icon">🔄</span><div class="v4-title">Recorrência Mensal</div><p class="v4-text">Suplementos são consumo recorrente — recompra garantida</p></div>
+          <div class="v4-item"><span class="v4-icon">🇧🇷</span><div class="v4-title">Escalável Nacional</div><p class="v4-text">Estrutura replicável em todas as 100+ unidades da rede</p></div>
+          <div class="v4-item"><span class="v4-icon">✅</span><div class="v4-title">Qualidade Garantida</div><p class="v4-text">Formulações confiáveis com a credibilidade Gaviões</p></div>
+        </div>
+      </div>
+      <div class="reveal right">
+        <div class="prod-strip">
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/WHEY_100_.png" alt="Whey"><div class="prod-strip-label">Whey</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/CREATINA_PURA.png" alt="Creatina"><div class="prod-strip-label">Creatina</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/PRÉ_TREINO.png" alt="Pré-Treino"><div class="prod-strip-label">Pré-Treino</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/PRE_TREINO_STICK.png" alt="Stick"><div class="prod-strip-label">Stick</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/TESTO.png" alt="Testo"><div class="prod-strip-label">Testo</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/TERMOGENICO.png" alt="Thermo"><div class="prod-strip-label">Thermo</div></div>
+          <div class="prod-strip-item"><img src="/mnt/user-data/uploads/ENERGÉTICO.png" alt="Energy"><div class="prod-strip-label">Energy</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PONTO DE VENDA ═══ -->
+<section class="pdv" id="pdv">
+  <div class="sec-wrap">
+    <div class="pdv-inner">
+      <div class="reveal left">
+        <div class="pdv-badge">🏪 Dentro da Academia</div>
+        <div class="sec-label">Ponto de Venda</div>
+        <h2 class="sec-title">FÁCIL<br>IMPLEMENTAÇÃO<br><span class="red">ALTA VISIBILIDADE</span></h2>
+        <div class="pdv-text">
+          <p>O quiosque Gaviões Nutrition é <strong>plug & play</strong> — design premium preto e vermelho com exposição total da linha HAWK. Posicionado no fluxo principal da academia, converte a visita diária dos alunos em venda consistente.</p>
+        </div>
+        <div class="pdv-4">
+          <div class="pdv-card"><span class="pdv-card-icon">⚡</span><div class="pdv-card-title">Implementação Rápida</div><p class="pdv-card-text">Quiosque plug & play, pronto para vender sem obras</p></div>
+          <div class="pdv-card"><span class="pdv-card-icon">👁️</span><div class="pdv-card-title">Alta Visibilidade</div><p class="pdv-card-text">Design premium que destaca a marca no ambiente</p></div>
+          <div class="pdv-card"><span class="pdv-card-icon">🛒</span><div class="pdv-card-title">Compra no Treino</div><p class="pdv-card-text">Atende a necessidade no momento em que ela acontece</p></div>
+          <div class="pdv-card"><span class="pdv-card-icon">🧑‍🤝‍🧑</span><div class="pdv-card-title">Praticidade ao Aluno</div><p class="pdv-card-text">Acesso fácil a produtos de qualidade e confiança</p></div>
+        </div>
+        <div class="pdv-footer-bar">
+          <p>A marca entra no dia a dia do aluno no <span>ambiente ideal de consumo</span></p>
+        </div>
+      </div>
+
+      <!-- Kiosk SVG -->
+      <div class="kiosk-wrap reveal right">
+        <svg class="kiosk-img" viewBox="0 0 460 580" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="kbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1c1c1c"/><stop offset="100%" stop-color="#0a0a0a"/></linearGradient>
+            <linearGradient id="kred" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D40000"/><stop offset="100%" stop-color="#ff3333"/></linearGradient>
+            <filter id="kglow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <ellipse cx="230" cy="560" rx="175" ry="14" fill="rgba(0,0,0,.55)"/>
+          <!-- base -->
+          <rect x="75" y="492" width="310" height="46" rx="4" fill="#181818" stroke="#2a2a2a" stroke-width="1.5"/>
+          <rect x="86" y="490" width="288" height="6" rx="2" fill="url(#kred)" opacity=".8"/>
+          <!-- side columns -->
+          <rect x="75" y="140" width="14" height="354" fill="#141414" stroke="#222" stroke-width="1"/>
+          <rect x="371" y="140" width="14" height="354" fill="#141414" stroke="#222" stroke-width="1"/>
+          <!-- LED strips sides -->
+          <rect x="80" y="160" width="3" height="310" rx="1.5" fill="#D40000" opacity=".5" filter="url(#kglow)"/>
+          <rect x="377" y="160" width="3" height="310" rx="1.5" fill="#D40000" opacity=".5" filter="url(#kglow)"/>
+          <!-- body -->
+          <rect x="89" y="140" width="282" height="354" rx="3" fill="url(#kbg)" stroke="#252525" stroke-width="1.5"/>
+          <!-- top canopy -->
+          <rect x="68" y="118" width="324" height="30" rx="3" fill="#141414" stroke="#2a2a2a" stroke-width="1"/>
+          <rect x="68" y="118" width="324" height="8" rx="3 3 0 0" fill="url(#kred)"/>
+          <!-- sign top -->
+          <rect x="130" y="78" width="200" height="44" rx="4" fill="#D40000"/>
+          <text x="230" y="107" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="22" fill="white" letter-spacing="4">HAWK STORE</text>
+          <rect x="174" y="118" width="4" height="8" fill="#D40000" opacity=".7"/>
+          <rect x="282" y="118" width="4" height="8" fill="#D40000" opacity=".7"/>
+          <!-- logo panel -->
+          <rect x="105" y="150" width="250" height="84" rx="3" fill="#0c0c0c" stroke="#D40000" stroke-width=".8" opacity=".8"/>
+          <rect x="107" y="152" width="246" height="80" rx="2" fill="rgba(212,0,0,.05)"/>
+          <text x="230" y="196" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="24" fill="white" letter-spacing="3">GAVIÕES</text>
+          <text x="230" y="218" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#D40000" letter-spacing="6">NUTRITION</text>
+          <!-- shelf 1 -->
+          <rect x="102" y="244" width="256" height="3.5" rx="1" fill="#2a2a2a"/>
+          <!-- products row 1 -->
+          <rect x="108" y="205" width="42" height="40" rx="2" fill="#111" stroke="#D40000" stroke-width=".8"/>
+          <rect x="154" y="205" width="42" height="40" rx="2" fill="#111" stroke="#D40000" stroke-width=".8"/>
+          <rect x="200" y="202" width="46" height="43" rx="2" fill="#111" stroke="#D40000" stroke-width="1.5"/>
+          <rect x="250" y="205" width="42" height="40" rx="2" fill="#111" stroke="#D40000" stroke-width=".8"/>
+          <rect x="296" y="205" width="42" height="40" rx="2" fill="#111" stroke="#D40000" stroke-width=".8"/>
+          <text x="129" y="231" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#888">WHEY</text>
+          <text x="175" y="231" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#888">TESTO</text>
+          <text x="223" y="228" text-anchor="middle" font-family="sans-serif" font-size="7" fill="white">PRÉ</text>
+          <text x="271" y="231" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#888">CREAT</text>
+          <text x="317" y="231" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#888">THERMO</text>
+          <!-- shelf 2 -->
+          <rect x="102" y="308" width="256" height="3.5" rx="1" fill="#2a2a2a"/>
+          <!-- energy cans row -->
+          <rect x="112" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <rect x="144" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <rect x="176" y="260" width="28" height="48" rx="2" fill="rgba(212,0,0,.25)" stroke="#D40000" stroke-width="1.2"/>
+          <rect x="208" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <rect x="240" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <rect x="272" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <rect x="304" y="262" width="28" height="46" rx="2" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <text x="230" y="320" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#555">ENERGÉTICOS · STICKS · SACHÊS</text>
+          <!-- shelf 3 -->
+          <rect x="102" y="372" width="256" height="3.5" rx="1" fill="#2a2a2a"/>
+          <!-- big bags row 3 -->
+          <rect x="112" y="322" width="58" height="50" rx="2" fill="#111" stroke="#444" stroke-width=".8"/>
+          <rect x="174" y="320" width="62" height="52" rx="2" fill="#111" stroke="#D40000" stroke-width="1.2"/>
+          <rect x="240" y="322" width="58" height="50" rx="2" fill="#111" stroke="#444" stroke-width=".8"/>
+          <rect x="302" y="322" width="44" height="50" rx="2" fill="#111" stroke="#444" stroke-width=".8"/>
+          <text x="141" y="352" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#777">CREAT.</text>
+          <text x="205" y="350" text-anchor="middle" font-family="sans-serif" font-size="8" fill="white">WHEY</text>
+          <text x="269" y="352" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#777">STICK</text>
+          <text x="324" y="352" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#777">TESTO</text>
+          <!-- counter -->
+          <rect x="89" y="380" width="282" height="114" fill="#101010" stroke="#222" stroke-width="1"/>
+          <rect x="89" y="380" width="282" height="4" fill="#D40000"/>
+          <!-- tablet -->
+          <rect x="154" y="390" width="152" height="86" rx="4" fill="#0a0a0a" stroke="#2a2a2a" stroke-width="1.2"/>
+          <rect x="158" y="394" width="144" height="78" rx="2" fill="#0c0c0c"/>
+          <text x="230" y="424" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#D40000">GAVIÕES NUTRITION</text>
+          <text x="230" y="442" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#555">LINHA HAWK COMPLETA</text>
+          <rect x="170" y="450" width="120" height="14" rx="2" fill="#D40000" opacity=".8"/>
+          <text x="230" y="461" text-anchor="middle" font-family="sans-serif" font-size="8" fill="white">COMPRE AQUI</text>
+          <!-- feet -->
+          <rect x="110" y="488" width="34" height="6" rx="2" fill="#1f1f1f"/>
+          <rect x="316" y="488" width="34" height="6" rx="2" fill="#1f1f1f"/>
+          <!-- NOVA VEIA label -->
+          <rect x="89" y="460" width="65" height="32" rx="1" fill="#D40000"/>
+          <text x="121" y="474" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white">NOVA VEIA</text>
+          <text x="121" y="487" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="7" fill="white">DE LUCRO</text>
+          <rect x="306" y="460" width="65" height="32" rx="1" fill="rgba(212,0,0,.15)" stroke="#D40000" stroke-width=".8"/>
+          <text x="338" y="474" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#D40000">ENERGIA</text>
+          <text x="338" y="487" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#888">FOCO · RESULT.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ESTRATÉGIA DE VENDAS ═══ -->
+<section class="estrategia" id="estrategia">
+  <div class="sec-wrap">
+    <div class="reveal">
+      <div class="sec-label">Nas Unidades</div>
+      <h2 class="sec-title">ESTRATÉGIA DE VENDAS<br><span class="red">ATRAIR · ENGAJAR · CONVERTER · RETER</span></h2>
+    </div>
+    <div class="funnel-steps">
+      <div class="funnel-step reveal">
+        <div class="fs-num">01</div>
+        <span class="fs-icon">🧲</span>
+        <div class="fs-title">ATRAIR</div>
+        <p class="fs-text">Exposição visual, degustação, lançamentos e promoções no ponto de venda dentro da academia.</p>
+      </div>
+      <div class="funnel-step reveal">
+        <div class="fs-num">02</div>
+        <span class="fs-icon">👥</span>
+        <div class="fs-title">ENGAJAR</div>
+        <p class="fs-text">Conteúdo, prova social, orientação e comunicação de performance com os alunos.</p>
+      </div>
+      <div class="funnel-step reveal">
+        <div class="fs-num">03</div>
+        <span class="fs-icon">🛒</span>
+        <div class="fs-title">CONVERTER</div>
+        <p class="fs-text">Compra prática no balcão ou online, no momento certo — quando o aluno está motivado.</p>
+      </div>
+      <div class="funnel-step reveal">
+        <div class="fs-num">04</div>
+        <span class="fs-icon">⭐</span>
+        <div class="fs-title">RETER</div>
+        <p class="fs-text">Recompra mensal, combos por objetivo e fidelização com o programa Gaviões.</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi reveal"><span class="kpi-icon">💰</span><div class="kpi-title">TICKET MÉDIO MAIOR</div><div class="kpi-sub">Suplementação aumenta o gasto médio por visita</div></div>
+      <div class="kpi reveal"><span class="kpi-icon">🔄</span><div class="kpi-title">RECORRÊNCIA MENSAL</div><div class="kpi-sub">Consumo regular garante recompra constante</div></div>
+      <div class="kpi reveal"><span class="kpi-icon">📈</span><div class="kpi-title">LIFETIME VALUE CRESCENTE</div><div class="kpi-sub">Fidelização aumenta o valor de cada aluno no tempo</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LINHA DE PRODUTOS ═══ -->
+<section class="produtos-detail" id="produtos">
+  <div class="sec-wrap">
+    <div class="prod-header-row reveal">
+      <div><div class="sec-label">Linha Inicial</div><h2 class="sec-title">LINHA HAWK<br><span class="red">7 PRODUTOS</span></h2></div>
+      <p>Portfólio de alto giro, foco em performance e recompra rápida. Do pré ao pós-treino.</p>
+    </div>
+    <div class="prod-grid">
+      <!-- WHEY feat -->
+      <div class="pcard feat reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/WHEY_100_.png" alt="Whey Protein">
+        <div class="pcard-body">
+          <span class="pcard-tag">Proteína e Ganho de Massa</span>
+          <div class="pcard-name">100% WHEY<br>PROTEIN 1KG</div>
+          <p class="pcard-desc">Custo-benefício e vantagem competitiva. Produto com forte apelo comercial e excelente valor percebido.</p>
+          <ul class="pcard-bullets">
+            <li>22g de proteína por porção</li>
+            <li>Sensação de custo-benefício</li>
+            <li>Diferencial frente às concorrentes</li>
+            <li>Ideal para rotina de treino</li>
+          </ul>
+          <span class="pcard-spec">1kg · Sabor Chocolate · Suplemento Proteico em Pó</span>
+          <span class="pcard-arrow">→ Ver Detalhes</span>
+        </div>
+      </div>
+      <!-- Creatina -->
+      <div class="pcard reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/CREATINA_PURA.png" alt="Creatina">
+        <div class="pcard-body">
+          <span class="pcard-tag">Força e Performance</span>
+          <div class="pcard-name">CREATINA<br>100% PURA</div>
+          <p class="pcard-desc">Suplemento indispensável e estratégico. Produto essencial, versátil e com forte recorrência de compra.</p>
+          <ul class="pcard-bullets">
+            <li>Creatina monohidratada 100% pura</li>
+            <li>Indispensável do jovem ao idoso</li>
+            <li>Alta recompra e aceitação</li>
+          </ul>
+          <span class="pcard-spec">300g · Suplemento em Pó</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+      <!-- Pré-Treino -->
+      <div class="pcard reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/PRÉ_TREINO.png" alt="Pré-Treino">
+        <div class="pcard-body">
+          <span class="pcard-tag">Energia e Foco</span>
+          <div class="pcard-name">PRÉ TREINO<br>HAWK 300G</div>
+          <p class="pcard-desc">Foco, energia, pump e disposição. Produto de forte impacto visual e grande apelo no balcão.</p>
+          <ul class="pcard-bullets">
+            <li>Mais foco para treinar</li>
+            <li>Energia para alta intensidade</li>
+            <li>Sensação de pump</li>
+          </ul>
+          <span class="pcard-spec">300g · Sabor Frutas Vermelhas</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+      <!-- Stick -->
+      <div class="pcard reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/PRE_TREINO_STICK.png" alt="Stick">
+        <div class="pcard-body">
+          <span class="pcard-tag">Dose Única e Venda Rápida</span>
+          <div class="pcard-name">HAWK STICK<br>SACHÊ</div>
+          <p class="pcard-desc">Produto ideal para conversão rápida no ponto de venda. Praticidade imediata.</p>
+          <ul class="pcard-bullets">
+            <li>Formato dose única</li>
+            <li>Venda rápida no balcão</li>
+            <li>Perfeito para compra de última hora</li>
+          </ul>
+          <span class="pcard-spec">10 sticks · Alta Intensidade</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+      <!-- Testo -->
+      <div class="pcard reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/TESTO.png" alt="Testo Hawk">
+        <div class="pcard-body">
+          <span class="pcard-tag">Vitalidade e Disposição</span>
+          <div class="pcard-name">TESTO HAWK<br>MAN & WOMAN</div>
+          <p class="pcard-desc">Vigor, vitalidade e disposição. Produto pensado para rotina de bem-estar e performance.</p>
+          <ul class="pcard-bullets">
+            <li>Ideal para homens e mulheres</li>
+            <li>Mais vigor no dia a dia</li>
+            <li>Posicionamento premium</li>
+          </ul>
+          <span class="pcard-spec">60 cápsulas · Man & Woman</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+      <!-- Termogênico -->
+      <div class="pcard reveal">
+        <img class="pcard-img" src="/mnt/user-data/uploads/TERMOGENICO.png" alt="Hawk Extreme">
+        <div class="pcard-body">
+          <span class="pcard-tag">Intensidade e Definição</span>
+          <div class="pcard-name">HAWK EXTREME<br>TERMOGÊNICO</div>
+          <p class="pcard-desc">Energia, intensidade e apoio à definição. Alto apelo aspiracional com comunicação segura.</p>
+          <ul class="pcard-bullets">
+            <li>Foco em emagrecimento eficiente</li>
+            <li>Complemento à prática de exercícios</li>
+            <li>Alto apelo aspiracional</li>
+          </ul>
+          <span class="pcard-spec">60 cápsulas · Termogênico</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+      <!-- Energético -->
+      <div class="pcard reveal" style="grid-column:2">
+        <img class="pcard-img" src="/mnt/user-data/uploads/ENERGÉTICO.png" alt="Energético Hawk">
+        <div class="pcard-body">
+          <span class="pcard-tag">Consumo Imediato no Balcão</span>
+          <div class="pcard-name">ENERGÉTICO<br>HAWK 269ML</div>
+          <p class="pcard-desc">Energy drink com o DNA Gaviões. Energia intensa, consumo pronto — venda imediata no balcão.</p>
+          <ul class="pcard-bullets">
+            <li>Consumo imediato — alta conversão</li>
+            <li>Posicionamento premium</li>
+            <li>Diferencial no ponto de venda</li>
+          </ul>
+          <span class="pcard-spec">269ml · Energy Drink · Energia Intensa</span>
+          <span class="pcard-arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ OPORTUNIDADE DE MERCADO ═══ -->
+<section class="mercado" id="mercado">
+  <div class="sec-wrap">
+    <div class="mercado-inner">
+      <div class="reveal left">
+        <div class="sec-label">Base Instalada</div>
+        <h2 class="sec-title">OPORTUNIDADE<br>DE <span class="red">MERCADO</span></h2>
+        <div class="big-numbers">
+          <div class="bn-card"><div class="bn-n">100</div><div class="bn-l">Unidades Ativas Hoje</div></div>
+          <div class="bn-card"><div class="bn-n">200<em>+</em></div><div class="bn-l">Previstas em 2026</div></div>
+          <div class="bn-card"><div class="bn-n">40<em>%</em></div><div class="bn-l">Margem Média</div></div>
+          <div class="bn-card"><div class="bn-n">24<em>h</em></div><div class="bn-l">Abertas Todo Dia</div></div>
+        </div>
+      </div>
+      <div class="reveal right">
+        <div class="mercado-perks">
+          <div class="mp"><span class="mp-icon">👥</span><div><div class="mp-title">Alto Fluxo Diário de Alunos</div><p class="mp-text">Ambiente com recorrência e exposição constante à marca — o consumidor vê o produto todo dia.</p></div></div>
+          <div class="mp"><span class="mp-icon">🛒</span><div><div class="mp-title">Alta Intenção de Compra</div><p class="mp-text">O consumidor fitness investe em qualidade e performance — perfil com maior propensão ao gasto.</p></div></div>
+          <div class="mp"><span class="mp-icon">🦅</span><div><div class="mp-title">Marca Própria no Ecossistema</div><p class="mp-text">Produtos desenvolvidos para o ambiente fitness real, com credibilidade de 51 anos de Gaviões.</p></div></div>
+          <div class="mp"><span class="mp-icon">🇧🇷</span><div><div class="mp-title">Expansão para Todo o Brasil</div><p class="mp-text">Estrutura replicável em cada nova unidade — crescimento da rede = crescimento da marca.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MODELO COMERCIAL ═══ -->
+<section class="modelo" id="modelo">
+  <div class="sec-wrap">
+    <div class="reveal">
+      <div class="sec-label">Receita Recorrente</div>
+      <h2 class="sec-title">MODELO COMERCIAL<br><span class="red">E RECORRÊNCIA</span></h2>
+      <p style="color:var(--gr);font-size:clamp(.9rem,1.1vw,1rem);font-weight:300;margin-top:8px">Mais ticket médio, mais recompra, mais lifetime value.</p>
+    </div>
+    <div class="modelo-flow">
+      <div class="mf reveal">
+        <div class="mf-arrow">›</div>
+        <span class="mf-icon">🎯</span>
+        <div class="mf-title">Combos por Objetivo</div>
+        <ul class="mf-list">
+          <li>Hipertrofia</li>
+          <li>Performance</li>
+          <li>Definição</li>
+          <li>Energia</li>
+        </ul>
+      </div>
+      <div class="mf reveal">
+        <div class="mf-arrow">›</div>
+        <span class="mf-icon">🛍️</span>
+        <div class="mf-title">Compra no Balcão ou Online</div>
+        <ul class="mf-list">
+          <li>Quiosque na academia</li>
+          <li>Site próprio</li>
+          <li>Marketplaces</li>
+          <li>Live shops</li>
+        </ul>
+      </div>
+      <div class="mf reveal">
+        <span class="mf-icon">🤝</span>
+        <div class="mf-title">Recompra Mensal e Fidelização</div>
+        <ul class="mf-list">
+          <li>Programa de fidelidade</li>
+          <li>Assinatura mensal</li>
+          <li>Influenciadores</li>
+          <li>Programa de afiliados</li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis-row">
+      <div class="kr reveal"><span class="kr-icon">🏷️</span><div class="kr-title">Ticket Médio</div></div>
+      <div class="kr reveal"><span class="kr-icon">🔄</span><div class="kr-title">Recorrência</div></div>
+      <div class="kr reveal"><span class="kr-icon">🤝</span><div class="kr-title">Fidelização</div></div>
+      <div class="kr reveal"><span class="kr-icon">📈</span><div class="kr-title">LTV Crescente</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJEÇÃO DE VENDAS ═══ -->
+<section class="projecao" id="projecao">
+  <div class="sec-wrap">
+    <div class="reveal">
+      <div class="sec-label">Potencial Financeiro</div>
+      <h2 class="sec-title">PROJEÇÃO DE<br><span class="red">VENDAS</span></h2>
+      <p style="color:var(--gr);font-size:.9rem;font-weight:300">Escala, margem e potencial financeiro da operação física.</p>
+    </div>
+    <div class="proj-nums">
+      <div class="pn reveal"><span class="pn-icon">%</span><div class="pn-n">40<em>%</em></div><div class="pn-l">Margem Média</div><div class="pn-sub">Marca própria</div></div>
+      <div class="pn reveal"><span class="pn-icon">🏢</span><div class="pn-n">200</div><div class="pn-l">Unidades Ativas</div><div class="pn-sub">Meta 2026</div></div>
+      <div class="pn reveal"><span class="pn-icon">📈</span><div class="pn-n">R$<em>20</em><br>MIL</div><div class="pn-l">Por Loja / Mês</div><div class="pn-sub">Cenário conservador</div></div>
+      <div class="pn reveal"><span class="pn-icon">💰</span><div class="pn-n">R$<em>4</em><br>MI</div><div class="pn-l">Por Mês</div><div class="pn-sub">Projeção consolidada</div></div>
+    </div>
+    <div class="proj-big reveal">
+      <div class="pb-left">R$ <em>4 milhões</em> / mês</div>
+      <div class="pb-arrow">→</div>
+      <div class="pb-right">R$ <em>48</em> milhões / ano</div>
+    </div>
+    <p class="proj-note reveal">⚠️ Projeção considerando ponto físico, sem contar vendas online.</p>
+  </div>
+</section>
+
+<!-- ═══ FASES DE IMPLEMENTAÇÃO ═══ -->
+<section class="fases" id="fases">
+  <div class="sec-wrap">
+    <div class="reveal">
+      <div class="sec-label">Crescimento Estruturado</div>
+      <h2 class="sec-title">FASES DE<br><span class="red">IMPLEMENTAÇÃO</span></h2>
+      <p style="color:var(--gr);font-size:.9rem;font-weight:300">Crescimento estruturado, controlado e escalável.</p>
+    </div>
+    <div class="fases-strip">
+      <div class="fase reveal"><div class="fase-n">01</div><span class="fase-icon">🦅</span><div class="fase-title">Marca & Produtos</div></div>
+      <div class="fase reveal"><div class="fase-n">02</div><span class="fase-icon">📋</span><div class="fase-title">Projeto Piloto Controlado</div></div>
+      <div class="fase reveal"><div class="fase-n">03</div><span class="fase-icon">🏪</span><div class="fase-title">5 a 10 Lojas Iniciais</div></div>
+      <div class="fase reveal"><div class="fase-n">04</div><span class="fase-icon">📍</span><div class="fase-title">Expansão Regional</div></div>
+      <div class="fase reveal"><div class="fase-n">05</div><span class="fase-icon">🇧🇷</span><div class="fase-title">Expansão Nacional</div></div>
+      <div class="fase reveal"><div class="fase-n">06</div><span class="fase-icon">💻</span><div class="fase-title">Omnichannel</div></div>
+    </div>
+    <div class="fases-caption reveal">
+      <p>Do piloto validado à <em>escala nacional</em> com consistência operacional</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ OPERAÇÃO & MARKETING ═══ -->
+<section class="operacao" id="operacao">
+  <div class="sec-wrap">
+    <div class="reveal">
+      <div class="sec-label">Da Indústria ao Aluno</div>
+      <h2 class="sec-title">OPERAÇÃO, EXPANSÃO<br><span class="red">E MARKETING</span></h2>
+      <p style="color:var(--gr);font-size:.9rem;font-weight:300">Da indústria ao aluno, com escala física e digital.</p>
+    </div>
+    <div class="op-grid">
+      <div class="op-col reveal">
+        <div class="op-col-header"><span class="op-col-icon">📦</span><div class="op-col-title">1. Operação & Logística</div></div>
+        <div class="op-items">
+          <div class="op-item">Indústria</div>
+          <div class="op-item">Centro de distribuição</div>
+          <div class="op-item">Academias Gaviões 24hrs</div>
+          <div class="op-item">Quiosques / Pontos de venda</div>
+        </div>
+      </div>
+      <div class="op-col reveal">
+        <div class="op-col-header"><span class="op-col-icon">🌐</span><div class="op-col-title">2. Expansão Online</div></div>
+        <div class="op-sub-items">
+          <span class="op-chip">Site Próprio</span>
+          <span class="op-chip">Marketplaces</span>
+          <span class="op-chip">Live Shops</span>
+          <span class="op-chip">Influenciadores</span>
+          <span class="op-chip">Programa Afiliados</span>
+        </div>
+      </div>
+      <div class="op-col reveal">
+        <div class="op-col-header"><span class="op-col-icon">📣</span><div class="op-col-title">3. Marketing & Conteúdo</div></div>
+        <div class="op-items">
+          <div class="op-item">Reels e Posts</div>
+          <div class="op-item">Prova social</div>
+          <div class="op-item">Campanhas comerciais</div>
+          <div class="op-item">Bastidores e educação</div>
+          <div class="op-item">Comunicação de performance</div>
+        </div>
+      </div>
+    </div>
+    <div class="op-cta-bar reveal">
+      <p>GAVIÕES NUTRITION: UMA NOVA VEIA DE LUCRO PARA A REDE</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ IDENTIDADE VISUAL ═══ -->
+<section class="brand-id" id="brand">
+  <div class="sec-wrap">
+    <div class="brand-grid">
+      <div class="reveal left">
+        <div class="sec-label">Brand Premium</div>
+        <h2 class="sec-title">EMBALAGEM E<br>IDENTIDADE<br><span class="red">VISUAL</span></h2>
+        <p style="color:var(--gr);font-size:.9rem;font-weight:300;margin-bottom:20px">Brand premium, consistente e pronta para crescer.</p>
+        <div class="brand-4">
+          <div class="b4"><span class="b4-icon">💎</span><div class="b4-title">Premium</div><p class="b4-text">Identidade forte e moderna</p></div>
+          <div class="b4"><span class="b4-icon">🔄</span><div class="b4-title">Consistente</div><p class="b4-text">Padrão visual em toda a linha</p></div>
+          <div class="b4"><span class="b4-icon">🎯</span><div class="b4-title">Alto Impacto</div><p class="b4-text">Destaque no ponto de venda</p></div>
+          <div class="b4"><span class="b4-icon">✅</span><div class="b4-title">Confiança</div><p class="b4-text">Percepção de qualidade e credibilidade</p></div>
+        </div>
+        <div class="brand-tagline">
+          <p>Preto, vermelho e branco criam uma <strong>assinatura visual de performance, força e reconhecimento imediato</strong> — em qualquer ponto de contato com o consumidor.</p>
+        </div>
+      </div>
+      <div class="reveal right">
+        <div class="lineup-big">
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/WHEY_100_.png" alt="Whey"><div class="lname">Whey</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/CREATINA_PURA.png" alt="Creatina"><div class="lname">Creatina</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/PRÉ_TREINO.png" alt="Pré-Treino"><div class="lname">Pré-Treino</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/PRE_TREINO_STICK.png" alt="Stick"><div class="lname">Stick</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/TESTO.png" alt="Testo"><div class="lname">Testo</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/TERMOGENICO.png" alt="Thermo"><div class="lname">Thermo</div></div>
+          <div class="lineup-item"><img src="/mnt/user-data/uploads/ENERGÉTICO.png" alt="Energy"><div class="lname">Energy</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA FINAL ═══ -->
+<section class="cta-final" id="cta">
+  <div class="cta-ghost">HAWK</div>
+  <div class="cta-inner reveal">
+    <div class="sec-label">Vamos Juntos</div>
+    <h2 class="sec-title">PRONTO PARA<br>VOAR <span class="red">MAIS ALTO?</span></h2>
+    <p class="cta-sub">Seja um parceiro Gaviões Nutrition. Leve a linha HAWK para sua academia ou ponto de venda. Entre em contato com nossa equipe comercial e faça parte dessa história de 51 anos.</p>
+    <div class="cta-btns">
+      <a href="https://wa.me/55" class="btn-p">💬 Falar no WhatsApp</a>
+      <a href="mailto:comercial@gavioesnutrition.com.br" class="btn-s">✉️ Enviar E-mail</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-inner">
+    <div>
+      <div class="ft-logo"><img src="/mnt/user-data/uploads/LOGO-GAVIOES-NUTRITION.png" alt="Gaviões Nutrition"></div>
+      <div class="ft-tagline">Parte do Ecossistema Gaviões 24hrs</div>
+      <p class="ft-desc">51 anos transformando vidas. Gaviões Nutrition é a suplementação com a garra que o Brasil conhece — dentro de cada academia, dentro de cada treino.</p>
+    </div>
+    <div>
+      <div class="ft-col-title">Linha HAWK</div>
+      <ul class="ft-links">
+        <li><a href="#">100% Whey Protein</a></li>
+        <li><a href="#">Creatina 100% Pura</a></li>
+        <li><a href="#">Pré Treino Hawk</a></li>
+        <li><a href="#">Hawk Stick Sachê</a></li>
+        <li><a href="#">Testo Hawk</a></li>
+        <li><a href="#">Hawk Extreme Termogênico</a></li>
+        <li><a href="#">Energético Hawk</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-title">Institucional</div>
+      <ul class="ft-links">
+        <li><a href="#">Nossa História</a></li>
+        <li><a href="#">Gaviões 24hrs</a></li>
+        <li><a href="#">Modelo de Quiosque</a></li>
+        <li><a href="#">Seja Franqueado</a></li>
+        <li><a href="#">Projeção Financeira</a></li>
+        <li><a href="#">Fases de Expansão</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-title">Contato</div>
+      <ul class="ft-links">
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">YouTube</a></li>
+        <li><a href="#">WhatsApp Comercial</a></li>
+        <li><a href="#">comercial@gavioesnutrition.com.br</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bottom" style="max-width:1280px;margin:0 auto">
+    <div class="ft-copy">© 2025 <span>Gaviões Nutrition</span>. Todos os direitos reservados. Parte da rede Gaviões 24hrs. · Força · Foco · Resultado</div>
+    <div class="ft-soc">
+      <a href="#" class="soc">IG</a><a href="#" class="soc">FB</a>
+      <a href="#" class="soc">YT</a><a href="#" class="soc">WA</a>
+    </div>
+  </div>
+  <div class="ft-hawk">GAVIÕES NUTRITION · FORÇA · FOCO · RESULTADO</div>
+</footer>
+
+<script>
+// NAV scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('solid',scrollY>60));
+
+// Mobile menu
+function openMob(){document.getElementById('mobmenu').classList.add('open');document.body.style.overflow='hidden'}
+function closeMob(){document.getElementById('mobmenu').classList.remove('open');document.body.style.overflow=''}
+
+// Scroll reveal
+const ro=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*100);ro.unobserve(e.target)}
+  })
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// Hero product cycle
+const prods=[
+  '/mnt/user-data/uploads/WHEY_100_.png',
+  '/mnt/user-data/uploads/PRÉ_TREINO.png',
+  '/mnt/user-data/uploads/ENERGÉTICO.png',
+  '/mnt/user-data/uploads/CREATINA_PURA.png',
+  '/mnt/user-data/uploads/TESTO.png',
+  '/mnt/user-data/uploads/TERMOGENICO.png',
+  '/mnt/user-data/uploads/PRE_TREINO_STICK.png'
+];
+let pi=0;
+const main=document.getElementById('ps-main');
+function cycleProduct(src){
+  main.style.opacity='0';main.style.transform='translate(-50%,-50%) scale(.85)';
+  setTimeout(()=>{main.src=src;main.style.opacity='1';main.style.transform='translate(-50%,-50%)';},320);
+}
+setInterval(()=>{pi=(pi+1)%prods.length;cycleProduct(prods[pi]);},3200);
+document.querySelectorAll('.ps-orbit').forEach(img=>{
+  img.addEventListener('click',()=>{main.src.includes(img.src.split('/').pop())||cycleProduct(img.src)});
+});
+
+// Counter animation
+function animateCounters(){
+  document.querySelectorAll('.pn-n,.bn-n,.stat-n').forEach(el=>{
+    const text=el.textContent;
+    const num=parseFloat(text.replace(/[^0-9.]/g,''));
+    if(!num||el.dataset.animated)return;
+    el.dataset.animated='1';
+    const prefix=text.match(/^[^0-9]*/)[0]||'';
+    const suffix=text.match(/[^0-9.]*$/)[0]||'';
+    let start=0;const dur=1800;const step=16;
+    const inc=num/(dur/step);
+    const timer=setInterval(()=>{
+      start=Math.min(start+inc,num);
+      const disp=num>=100?Math.round(start):(start%1===0?start:start.toFixed(0));
+      el.textContent=prefix+disp+suffix;
+      if(start>=num)clearInterval(timer);
+    },step);
+  });
+}
+const cro=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){animateCounters();cro.disconnect()}})
+},{threshold:.2});
+document.querySelector('.proj-nums')&&cro.observe(document.querySelector('.proj-nums'));
+</script>
+</body>
+</html>
